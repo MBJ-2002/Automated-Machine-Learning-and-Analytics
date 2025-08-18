@@ -105,8 +105,8 @@ with right_col:
         elif model_type == "Regression":
             model_choice = st.selectbox(
                 "Model",
-                ["Linear Regression", "Random Forest", "XGBoost"],
-                index=["Linear Regression","Random Forest","XGBoost"].index(MODEL_CHOICE)
+                ["Linear Regression"],
+                index=["Linear Regression"].index(MODEL_CHOICE)
             )
             use_pca = False
         else:
