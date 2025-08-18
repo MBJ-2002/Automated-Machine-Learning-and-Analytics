@@ -240,7 +240,7 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
             st.plotly_chart(dist_fig, use_container_width=True)
 
         elif model_type=="Regression":
-            rmse = mean_squared_error(y_test, y_pred, squared=False)
+            rmse = mean_squared_error(y_test, y_pred)
             st.write(f"**RMSE:** {rmse:.3f}")
             rmse_cv = -cross_val_score(model, X, y, cv=5, scoring='neg_root_mean_squared_error')
             st.write(f"**5-Fold CV RMSE:** {rmse_cv.mean():.3f} ± {rmse_cv.std():.3f}")
