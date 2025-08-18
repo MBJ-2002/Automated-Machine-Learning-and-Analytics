@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.figure_factory as ff
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, mean_squared_error, precision_score, recall_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, mean_squared_error, precision_score, recall_score, confusion_matrix, classification_report, root_mean_squared_error
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.cluster import KMeans
@@ -240,7 +240,7 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
             st.plotly_chart(dist_fig, use_container_width=True)
 
         elif model_type=="Regression":
-            rmse = mean_squared_error(y_test, y_pred, squared=False)
+            rmse = root_mean_squared_error(y_test, y_pred, squared=False)
             st.write(f"**RMSE:** {rmse:.3f}")
             rmse_cv = -cross_val_score(model, X, y, cv=5, scoring='neg_root_mean_squared_error')
             st.write(f"**5-Fold CV RMSE:** {rmse_cv.mean():.3f} ± {rmse_cv.std():.3f}")
