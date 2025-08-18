@@ -168,7 +168,7 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
 
     # Select model
     if model_choice == "Logistic Regression":
-        model = LogisticRegression(max_iter=500)
+        model = LogisticRegression(max_iter=1000)
     elif model_choice == "Linear Regression":
         model = LinearRegression()
     elif model_choice == "Random Forest":
