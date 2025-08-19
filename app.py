@@ -337,6 +337,18 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
                     labels={'x': 'Class', 'y': 'Count'}, title="Class Distribution"
                 )
                 st.plotly_chart(dist_fig, use_container_width=True)
+                try:
+                    with open("trained_model.pkl", "wb") as f:
+                        joblib.dump(model, f)
+                    with open("trained_model.pkl", "rb") as f:
+                        st.download_button(
+                            label="Download Trained Model",
+                            data=f,
+                            file_name="trained_model.pkl",
+                            type="secondary"
+                        )
+                except Exception:
+                    st.info("Could not save model to disk in this environment.")
 
         elif model_type == "Regression":
             st.markdown("<h3 style='text-align: center;'>Model Metrics</h3>", unsafe_allow_html=True)
@@ -371,6 +383,18 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
                                      title="Predicted vs Actual")
                     fig.add_scatter(x=y_test, y=y_test, mode="lines", name="Ideal Fit")
                     st.plotly_chart(fig, use_container_width=True)
+                try:
+                    with open("trained_model.pkl", "wb") as f:
+                        joblib.dump(model, f)
+                    with open("trained_model.pkl", "rb") as f:
+                        st.download_button(
+                            label="Download Trained Model",
+                            data=f,
+                            file_name="trained_model.pkl",
+                            type="secondary"
+                        )
+                except Exception:
+                    st.info("Could not save model to disk in this environment.")
 
         else:  # Clustering
             # Build numeric matrix and labels
