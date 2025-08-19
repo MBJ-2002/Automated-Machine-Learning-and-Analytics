@@ -110,7 +110,7 @@ with right_col:
             default_choice = "Linear Regression"
             model_choice = st.selectbox("Model", options, index=options.index(default_choice))
             use_pca = False
-        
+        # I have disabled clustering for now due to some errors I can't figure
         #else:
         #    options = ["KMeans", "DBSCAN"]
         #    default_choice = "KMeans"
