@@ -48,30 +48,34 @@ with left_col:
         df = pd.read_csv(dataset)
         COLUMN_NAMES = df.columns.tolist()
 
-                # Feature selection
+         # reset if previous index is out of range
+        
         st.markdown("### Select Feature Columns")
         feature_columns = st.multiselect(
             "Feature Columns",
             options=COLUMN_NAMES,
-            default=st.session_state.get("feature_columns", [])
-        )
+            default=[col for col in st.session_state.get("feature_columns", []) if col in COLUMN_NAMES]
+            )        
         st.session_state.feature_columns = feature_columns
-
-        # Target selection - only show columns not selected as features
+        
         remaining_columns = [col for col in COLUMN_NAMES if col not in feature_columns]
 
-        st.markdown("### Select Target Column")
+        prev_index = st.session_state.get("target_index", 0)
+        if prev_index >= len(remaining_columns):
+            prev_index = 0  # reset if previous index is no longer valid
+
         if remaining_columns:
             target_column = st.radio(
                 "Target Column",
                 options=remaining_columns,
                 horizontal=True,
-                index=st.session_state.get("target_index", 0)
+                index=prev_index
             )
             st.session_state.target_column = target_column
             st.session_state.target_index = remaining_columns.index(target_column)
         else:
             st.warning("All columns are selected as features! Please deselect at least one for the target.")
+
 
 
         # Dataset info
@@ -151,24 +155,25 @@ with right_col:
 
         # Buttons side by side
         btn_col1, btn_col2 = st.columns([1, 1])
-        train_clicked = btn_col1.button("Train Model", type="primary")
+        #train_clicked = btn_col1.button("Train Model", type="primary")        
+        if 'train_clicked' not in st.session_state:
+            st.session_state.train_clicked = False
+        if btn_col1.button("Train Model", type="primary"):
+            st.session_state.train_clicked = True
 
 # ============================
 # Training and Metrics
 # ============================
-if train_clicked and df is not None and TARGET_COLUMN is not None:
-    df_copy = df.copy()
-
+TARGET_COLUMN = st.session_state.get("target_column")
+if st.session_state.get("train_clicked", False) and df is not None and TARGET_COLUMN is not None:
     features = st.session_state.get("feature_columns", [])
-    TARGET_COLUMN = st.session_state.get("target_column")
-    print(TARGET_COLUMN)
-
 
     if not features or not TARGET_COLUMN:
         st.warning("Please select features and target before training!")
     else:
         st.success(f"Training model on features: {features} with target: {TARGET_COLUMN}")
 
+    df_copy = df.copy()
     # Missing value handling
     if null_handling == "Drop Rows":
         df_copy = df_copy.dropna()
