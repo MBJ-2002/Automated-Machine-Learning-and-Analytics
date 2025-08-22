@@ -54,9 +54,10 @@ with left_col:
         feature_columns = st.multiselect(
             "Feature Columns",
             options=COLUMN_NAMES,
-            default=[col for col in st.session_state.get("feature_columns", []) if col in COLUMN_NAMES]
+            default=[col for col in st.session_state.get("feature_columns", []) if col in COLUMN_NAMES],
+            key="feature_columns"
             )        
-        st.session_state.feature_columns = feature_columns
+        #st.session_state.feature_columns = feature_columns
         
         remaining_columns = [col for col in COLUMN_NAMES if col not in feature_columns]
 
@@ -155,9 +156,9 @@ with right_col:
 
         # Buttons side by side
         btn_col1, btn_col2 = st.columns([1, 1])
-        #train_clicked = btn_col1.button("Train Model", type="primary")        
         if 'train_clicked' not in st.session_state:
             st.session_state.train_clicked = False
+
         if btn_col1.button("Train Model", type="primary"):
             st.session_state.train_clicked = True
 
@@ -555,6 +556,8 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
                 st.info("Could not save model to disk in this environment.")
     else:
         st.info("No model selected or failed to initialize.")
+    
+    st.session_state.train_clicked = False
 
 # ============================
 # Dataset Visualizations
