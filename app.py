@@ -48,20 +48,42 @@ with left_col:
         df = pd.read_csv(dataset)
         COLUMN_NAMES = df.columns.tolist()
 
-        # Target selection (radio horizontal)
-        st.markdown("### Select Target Column")
-        TARGET_COLUMN = st.radio(
-            "Target Column",
+         # reset if previous index is out of range
+        
+        st.markdown("### Select Feature Columns")
+        feature_columns = st.multiselect(
+            "Feature Columns",
             options=COLUMN_NAMES,
-            horizontal=True
-        )
-        st.text(f"Target column: {TARGET_COLUMN}")
+            default=[col for col in st.session_state.get("feature_columns", []) if col in COLUMN_NAMES],
+            key="feature_columns"
+            )        
+        #st.session_state.feature_columns = feature_columns
+        
+        remaining_columns = [col for col in COLUMN_NAMES if col not in feature_columns]
+
+        prev_index = st.session_state.get("target_index", 0)
+        if prev_index >= len(remaining_columns):
+            prev_index = 0  # reset if previous index is no longer valid
+
+        if remaining_columns:
+            target_column = st.radio(
+                "Target Column",
+                options=remaining_columns,
+                horizontal=True,
+                index=prev_index
+            )
+            st.session_state.target_column = target_column
+            st.session_state.target_index = remaining_columns.index(target_column)
+        else:
+            st.warning("All columns are selected as features! Please deselect at least one for the target.")
+
+
 
         # Dataset info
         total_rows = df.shape[0]
         empty_rows = df.isnull().any(axis=1).sum()
 
-        # Determine type of data (use .shape to get column count)
+        # Determine type of data
         num_cols = df.select_dtypes(include=np.number).columns.size
         cat_cols = df.select_dtypes(include="object").columns.size
         if num_cols > 0 and cat_cols > 0:
@@ -134,14 +156,25 @@ with right_col:
 
         # Buttons side by side
         btn_col1, btn_col2 = st.columns([1, 1])
-        train_clicked = btn_col1.button("Train Model", type="primary")
+        if 'train_clicked' not in st.session_state:
+            st.session_state.train_clicked = False
+
+        if btn_col1.button("Train Model", type="primary"):
+            st.session_state.train_clicked = True
 
 # ============================
 # Training and Metrics
 # ============================
-if train_clicked and df is not None and TARGET_COLUMN is not None:
-    df_copy = df.copy()
+TARGET_COLUMN = st.session_state.get("target_column")
+if st.session_state.get("train_clicked", False) and df is not None and TARGET_COLUMN is not None:
+    features = st.session_state.get("feature_columns", [])
 
+    if not features or not TARGET_COLUMN:
+        st.warning("Please select features and target before training!")
+    else:
+        st.success(f"Training model on features: {features} with target: {TARGET_COLUMN}")
+
+    df_copy = df.copy()
     # Missing value handling
     if null_handling == "Drop Rows":
         df_copy = df_copy.dropna()
@@ -523,6 +556,8 @@ if train_clicked and df is not None and TARGET_COLUMN is not None:
                 st.info("Could not save model to disk in this environment.")
     else:
         st.info("No model selected or failed to initialize.")
+    
+    st.session_state.train_clicked = False
 
 # ============================
 # Dataset Visualizations
