@@ -29,7 +29,7 @@ NULL_HANDLING = "Drop Rows"
 # Streamlit setup
 # ============================
 st.set_page_config(layout="wide")
-st.title("AutoML")
+st.title("Automated Machine Learning")
 
 # Two main columns for inputs
 left_col, right_col = st.columns(2)
