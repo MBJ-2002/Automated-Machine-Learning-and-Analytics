@@ -129,14 +129,14 @@ with right_col:
             default_choice = "Random Forest" if "Random Forest" in options else options[0]
             model_choice = st.selectbox("Model", options, index=options.index(default_choice))
             if model_choice == "KNN Classifier":            
-                N_NEIGHBOURS = int(st.text_input('Enter value of N',2))
+                N_NEIGHBOURS = int(st.text_input('Enter value of N',"2"))
             use_pca = st.checkbox("Use PCA (2 components)")
         else:
             options = ["Linear Regression", "Random Forest Regressor", "XGBoost", "KNN Regressor"]
             default_choice = "Linear Regression"
             model_choice = st.selectbox("Model", options, index=options.index(default_choice))
             if model_choice == "KNN Regressor":
-                N_NEIGHBOURS = int(st.text_input('Enter value of N', 2))
+                N_NEIGHBOURS = int(st.text_input('Enter value of N', "2"))
             use_pca = False
         # I have disabled clustering for now due to some errors I can't figure
         #else:
