@@ -11,6 +11,7 @@ from sklearn.metrics import (
 )
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.decomposition import PCA
 import joblib
@@ -24,6 +25,7 @@ COLUMN_NAMES = []
 MODEL_TYPE = "Classification"
 MODEL_CHOICE = "Random Forest"
 NULL_HANDLING = "Drop Rows"
+N_NEIGHBOURS = 2
 
 # ============================
 # Streamlit setup
@@ -123,14 +125,18 @@ with right_col:
 
         # Model choice depends on type
         if model_type == "Classification":
-            options = ["Logistic Regression", "Random Forest", "XGBoost"]
+            options = ["Logistic Regression", "Random Forest", "XGBoost","KNN Classifier"]
             default_choice = "Random Forest" if "Random Forest" in options else options[0]
             model_choice = st.selectbox("Model", options, index=options.index(default_choice))
+            if model_choice == "KNN Classifier":            
+                N_NEIGHBOURS = int(st.text_input('Enter value of N'))
             use_pca = st.checkbox("Use PCA (2 components)")
         else:
-            options = ["Linear Regression", "Random Forest Regressor", "XGBoost"]
+            options = ["Linear Regression", "Random Forest Regressor", "XGBoost", "KNN Regressor"]
             default_choice = "Linear Regression"
             model_choice = st.selectbox("Model", options, index=options.index(default_choice))
+            if model_choice == "KNN Regressor":
+                N_NEIGHBOURS = int(st.text_input('Enter value of N'))
             use_pca = False
         # I have disabled clustering for now due to some errors I can't figure
         #else:
@@ -278,6 +284,10 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
         model = RandomForestClassifier()
     elif model_choice == "Random Forest Regressor":
         model = RandomForestRegressor()
+    elif model_choice == "KNN Classifier":
+        model = KNeighborsClassifier(n_neighbors=N_NEIGHBOURS)
+    elif model_choice == "KNN Regressor":
+        model = KNeighborsRegressor(n_neighbors=N_NEIGHBOURS)
     elif model_choice == "XGBoost":
         try:
             from xgboost import XGBClassifier, XGBRegressor
@@ -287,15 +297,7 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
                 model = XGBRegressor()
         except Exception:
             st.error("XGBoost is not installed. Please install xgboost to use this model.")
-            model = None
-    elif model_choice == "KMeans":
-        # For sklearn<1.4 replace n_init="auto" with n_init=10
-        try:
-            model = KMeans(n_clusters=n_clusters, n_init="auto")
-        except TypeError:
-            model = KMeans(n_clusters=n_clusters, n_init=10)
-    elif model_choice == "DBSCAN":
-        model = DBSCAN()
+            model = None    
 
     # Train model (show spinner)
     if model is not None:
