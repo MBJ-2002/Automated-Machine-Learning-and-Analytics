@@ -310,7 +310,7 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
                 X_clust = X_numeric_all if 'X_numeric_all' in locals() else X.select_dtypes(include=np.number)
                 model.fit(X_clust)
 
-        st.success("✅ Model Trained!")
+        st.success("Model Trained!")
 
         # ====================
         # Metrics & Visualizations
@@ -324,7 +324,7 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
                 imbalance_ratio = class_counts.max() / class_counts.sum()
                 if imbalance_ratio > 0.7:
                     st.warning(
-                        f"⚠️ Dataset is imbalanced! Class `{class_counts.idxmax()}` has "
+                        f"Dataset is imbalanced! Class `{class_counts.idxmax()}` has "
                         f"{class_counts.max()} out of {class_counts.sum()} samples."
                     )
 
