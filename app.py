@@ -380,7 +380,7 @@ if st.session_state.get("train_clicked", False) and df is not None and TARGET_CO
                             label="Download Trained Model",
                             data=f,
                             file_name="trained_model.pkl",
-                            type="secondary"
+                            type="primary"
                         )
                 except Exception:
                     st.info("Could not save model to disk in this environment.")
